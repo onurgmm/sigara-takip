@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Takip Geçmişi - Sigara Takip Sitesi</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+    <div class="profile-menu-wrapper">
+        <button id="profileIconButton" class="profile-icon-button" type="button" title="Kayıtlı Profiller">
+            👤
+        </button>
+        <div id="profileDropdown" class="profile-dropdown hidden">
+            <div class="profile-dropdown-title">Kayıtlı Profiller</div>
+            <div id="profileDropdownList"></div>
+        </div>
+    </div>
+    <div class="container dashboard-container">
+        <div style="text-align: left; margin-bottom: 15px;">
+            <a href="/" class="home-btn">← Ana Sayfaya Dön</a>
+        </div>
+        <h2><%= user.name %>, Takip Geçmişin</h2>
+        
+        <div class="history-container card" style="margin-top: 30px; text-align: left;">
+            <% if (history.length === 0) { %>
+                <p style="text-align: center;">Henüz günlük kayıt girmedin.</p>
+            <% } else { %>
+                <ul style="list-style: none; padding: 0;">
+                    <% history.forEach(log => { %>
+                        <li style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 500;"><%= log.date.toLocaleDateString('tr-TR') %></span>
+                            <% if (log.status === 'success') { %>
+                                <span class="badge badge-success">Başarılı</span>
+                            <% } else if (log.status === 'struggled') { %>
+                                <span class="badge badge-warning">Zorlandı</span>
+                            <% } else if (log.status === 'relapsed') { %>
+                                <span class="badge badge-danger">İçti</span>
+                            <% } %>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
+
+        <div class="actions">
+            <a href="/dashboard/<%= user.id %>" class="btn btn-outline">Dashboard'a Dön</a>
+        </div>
+    </div>
+    <script src="/public/js/main.js"></script>
+</body>
+</html>

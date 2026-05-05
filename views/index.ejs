@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigara Takip | Özgürlüğe Adım At</title>
+    <meta name="description" content="Sigarayı bırakma yolculuğunu takip et, tasarrufunu gör ve sağlığına yatırım yap.">
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body class="landing-body">
+    <div class="profile-menu-wrapper">
+        <button id="profileIconButton" class="profile-icon-button" type="button" title="Kayıtlı Profiller">
+            👤
+        </button>
+        <div id="profileDropdown" class="profile-dropdown hidden">
+            <div class="profile-dropdown-title">Kayıtlı Profiller</div>
+            <div id="profileDropdownList"></div>
+        </div>
+    </div>
+
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="particles-container" id="particles"></div>
+        
+        <div class="hero-content">
+            <div class="glass-card">
+                <h1 class="hero-title">Bugün hayatını değiştirdiğin gün olabilir.</h1>
+                <p class="hero-subtitle">Sigarasız yaşam yolculuğunu takip et, tasarrufunu gör, sağlığına yatırım yap.</p>
+                
+                <div class="hero-btns">
+                    <a href="/form" class="btn btn-premium btn-premium-primary">
+                        <span>🚀</span> Sigarayı Bıraktım
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/public/js/main.js"></script>
+    <script>
+        // Basit floating particles oluşturucu
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random boyut, pozisyon ve hız
+                const size = Math.random() * 5 + 2;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `-${delay}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+    </script>
+</body>
+</html>

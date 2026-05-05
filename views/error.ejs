@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hata - Sigara Takip Sitesi</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <style>
+        .error-container {
+            margin-top: 50px;
+            padding: 30px;
+            border: 2px solid #e53935;
+            background-color: #ffebee;
+        }
+        .error-container h2 {
+            color: #c62828;
+            margin-bottom: 15px;
+        }
+        .error-detail {
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            color: #333;
+            font-family: monospace;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-menu-wrapper">
+        <button id="profileIconButton" class="profile-icon-button" type="button" title="Kayıtlı Profiller">
+            👤
+        </button>
+        <div id="profileDropdown" class="profile-dropdown hidden">
+            <div class="profile-dropdown-title">Kayıtlı Profiller</div>
+            <div id="profileDropdownList"></div>
+        </div>
+    </div>
+    <div class="container error-container">
+        <h2><%= message %></h2>
+        <p>Bir sorunla karşılaştık. Lütfen tekrar deneyin veya yönergeleri izleyin.</p>
+        
+        <% if (locals.detail) { %>
+            <div class="error-detail">
+                <%= detail %>
+            </div>
+        <% } %>
+
+        <div class="actions">
+            <a href="/" class="home-btn">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+    <script src="/public/js/main.js"></script>
+</body>
+</html>

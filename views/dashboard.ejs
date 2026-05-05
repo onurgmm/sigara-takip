@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonuçların - Sigara Takip Sitesi</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+    <div class="profile-menu-wrapper">
+        <button id="profileIconButton" class="profile-icon-button" type="button" title="Kayıtlı Profiller">
+            👤
+        </button>
+        <div id="profileDropdown" class="profile-dropdown hidden">
+            <div class="profile-dropdown-title">Kayıtlı Profiller</div>
+            <div id="profileDropdownList"></div>
+        </div>
+    </div>
+    <div class="container dashboard-container">
+        <div style="text-align: left; margin-bottom: 15px;">
+            <a href="/" class="home-btn">← Ana Sayfaya Dön</a>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Hoş Geldin, <%= user.name %>!</h2>
+            <button id="healthButton" class="health-btn">
+                ❤️ Sağlık
+            </button>
+        </div>
+        
+        <div class="motivational-quote">
+            <p>"<%= motivationalMessage %>"</p>
+        </div>
+
+        <div class="milestone-container">
+            <h3>Bugün <%= dayCount %>. Gündesin!</h3>
+            <p style="font-weight: bold; color: var(--primary-color);">Sıradaki hedefin: <%= nextGoalObj.label %></p>
+            <p><%= nextGoalObj.label %> hedefi için <%= currentGoalProgress %> / <%= nextGoal %> gün tamamlandı</p>
+            
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: <%= progressPercent %>%;"></div>
+            </div>
+
+            <div class="goals-list" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                <% allGoals.forEach(goal => { %>
+                    <% 
+                        let goalStatus = 'pending';
+                        if (dayCount >= goal.days) {
+                            goalStatus = 'completed';
+                        } else if (goal.days === nextGoal) {
+                            goalStatus = 'active';
+                        }
+                    %>
+                    <div class="goal-badge goal-<%= goalStatus %>">
+                        <%= goal.label %>
+                        <% if (goalStatus === 'completed') { %> ✓ <% } %>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <div class="daily-tracking card">
+            <h3>Bugünkü Durumun</h3>
+            <% if (todayLog) { %>
+                <div class="badge-container">
+                    <% if (todayLog.status === 'success') { %>
+                        <span class="badge badge-success">Başarılı: Bugün sigara içmedin! 🎉</span>
+                    <% } else if (todayLog.status === 'struggled') { %>
+                        <span class="badge badge-warning">Zorlandın ama içmedin! 💪</span>
+                    <% } else if (todayLog.status === 'relapsed') { %>
+                        <span class="badge badge-danger">Maalesef içtin. Yarın yeni bir gün! 🔄</span>
+                    <% } %>
+                </div>
+                <p style="font-size: 0.9rem; margin-top: 10px; color: #666;">Durumunu güncellemek istersen aşağıdan tekrar seçebilirsin.</p>
+            <% } %>
+
+            <form action="/daily-log/<%= user.id %>" method="POST" class="daily-log-form">
+                <button type="submit" name="status" value="success" class="btn btn-log btn-log-success" data-status="success">Bugün Sigara İçmedim</button>
+                <button type="submit" name="status" value="struggled" class="btn btn-log btn-log-warning">Zorlandım Ama İçmedim</button>
+                <button type="submit" name="status" value="relapsed" class="btn btn-log btn-log-danger" data-status="relapsed">Bugün Sigara İçtim</button>
+            </form>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h3>İçilmeyen Sigara</h3>
+                <div class="value"><%= avoidedCigarettes %> <span class="unit">Adet</span></div>
+            </div>
+
+            <div class="card highlight">
+                <h3>Toplam Tasarruf</h3>
+                <div class="value"><%= totalSaved.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> <span class="unit">₺</span></div>
+            </div>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">Güncel Paket Fiyatı</h3>
+                    <button id="openPriceModalBtn" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem;">Güncelle</button>
+                </div>
+                <div class="value"><%= user.packPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> <span class="unit">₺</span></div>
+            </div>
+        </div>
+        
+        <h3 class="mt-2">Gelecek Tahmini Tasarruflar</h3>
+        <div class="cards-grid sub-cards">
+            <div class="card small-card">
+                <h4>Günlük</h4>
+                <div class="value-small"><%= dailySaving.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</div>
+            </div>
+            <div class="card small-card">
+                <h4>Haftalık</h4>
+                <div class="value-small"><%= weeklySaving.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</div>
+            </div>
+            <div class="card small-card">
+                <h4>Aylık</h4>
+                <div class="value-small"><%= monthlySaving.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</div>
+            </div>
+        </div>
+        
+        <!-- Yatırım Senaryosu Kartı -->
+        <div class="card investment-card" style="margin-top: 30px;">
+            <h3 style="color: #b45309;">Bu parayı değerlendirseydin 📈 💰</h3>
+            <p>Eğer bu tasarrufu her gün <strong>%0.1</strong> bileşik getiri ile değerlendirseydin:</p>
+            <div class="investment-stats" style="margin: 15px 0; padding: 15px; background: rgba(255, 255, 255, 0.6); border-radius: 8px;">
+                <div class="stat" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.1rem;">
+                    <span>Ana Para (<%= investmentDays %> gün):</span>
+                    <strong><%= investmentPrincipal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</strong>
+                </div>
+                <div class="stat" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.1rem;">
+                    <span>Tahmini Toplam Değer:</span>
+                    <strong style="color: #166534;"><%= projectedInvestmentValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</strong>
+                </div>
+                <div class="stat" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.1rem;">
+                    <span>Tahmini Kazanç:</span>
+                    <strong style="color: #16a34a;">+<%= projectedProfit.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</strong>
+                </div>
+            </div>
+            <div class="investment-footer" style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 0, 0, 0.1);">
+                <p style="color: #854d0e; font-weight: 500; margin-bottom: 10px;">Sadece biriktirmek yerine değerlenseydi <strong>+<%= projectedProfit.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> ₺</strong> ekstra kazanabilirdin.</p>
+                <small style="color: #6b7280; font-size: 0.75rem; font-style: italic;">Bu hesaplama, her gün sigaraya harcanmayan tutarın o gün yatırıma eklendiği varsayımıyla yapılmıştır. Gerçek yatırım getirileri değişkenlik gösterebilir.</small>
+            </div>
+        </div>
+
+        <% if (recentLogs && recentLogs.length > 0) { %>
+        <div class="history-preview card" style="margin-top: 30px; text-align: left;">
+            <h3 style="text-align: center;">Son <%= recentLogs.length %> Günlük Takip</h3>
+            <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                <% recentLogs.forEach(log => { %>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+                        <span><%= log.date.toLocaleDateString('tr-TR') %></span>
+                        <% if (log.status === 'success') { %>
+                            <span style="color: green; font-weight: bold;">Başarılı</span>
+                        <% } else if (log.status === 'struggled') { %>
+                            <span style="color: orange; font-weight: bold;">Zorlandı</span>
+                        <% } else if (log.status === 'relapsed') { %>
+                            <span style="color: red; font-weight: bold;">İçti</span>
+                        <% } %>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+        <% } %>
+
+        <div class="actions">
+            <a href="/history/<%= user.id %>" class="btn btn-outline">Tüm Geçmişi Gör</a>
+        </div>
+    </div>
+
+    <!-- Sağlık Bilgileri Modalı -->
+    <div id="healthModal" class="health-modal">
+        <div class="health-modal-content">
+            <span class="close-modal" id="closeHealthModalBtn">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Sigaranın Sağlık Riskleri ve Bırakınca Oluşan İyileşmeler</h2>
+            
+            <div class="health-cards-grid">
+                <!-- Risk 1 -->
+                <div class="health-card risk-card">
+                    <div class="health-card-header">🫁 KOAH Riski</div>
+                    <ul class="health-list">
+                        <li>Sigara, KOAH için en önemli risk faktörlerinden biridir.</li>
+                        <li>Uzun süreli sigara kullanımı hava yollarında kalıcı daralma, öksürük, balgam ve nefes darlığına yol açabilir.</li>
+                        <li>Sigarayı bırakmak KOAH gelişme riskini azaltır ve mevcut hastalıkta ilerlemeyi yavaşlatabilir.</li>
+                    </ul>
+                </div>
+                <!-- Risk 2 -->
+                <div class="health-card risk-card">
+                    <div class="health-card-header">🧬 Akciğer Kanseri Riski</div>
+                    <ul class="health-list">
+                        <li>Sigara, akciğer kanserinin en önemli nedenlerinden biridir.</li>
+                        <li>İçilen sigara miktarı ve süre arttıkça risk yükselir.</li>
+                        <li>Sigarayı bırakmak zamanla akciğer kanseri riskini azaltır.</li>
+                    </ul>
+                </div>
+                <!-- Risk 3 -->
+                <div class="health-card risk-card">
+                    <div class="health-card-header">🩺 Mesane Kanseri Riski</div>
+                    <ul class="health-list">
+                        <li>Sigara sadece akciğeri değil, mesaneyi de etkileyebilir.</li>
+                        <li>Sigara dumanındaki zararlı maddeler idrar yoluyla atılırken mesane dokusuna zarar verebilir.</li>
+                        <li>Bu nedenle sigara mesane kanseri riskini artırabilir.</li>
+                    </ul>
+                </div>
+                <!-- Risk 4 -->
+                <div class="health-card risk-card">
+                    <div class="health-card-header">❤️ Kalp Hastalığı Riski</div>
+                    <ul class="health-list">
+                        <li>Sigara damar yapısını bozar, damar sertliği riskini artırır.</li>
+                        <li>Kalp krizi, inme ve periferik damar hastalığı riskini yükseltebilir.</li>
+                        <li>Sigarayı bırakmak kalp-damar sağlığı için en önemli olumlu adımlardan biridir.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="health-card recovery-card" style="margin-top: 20px;">
+                <div class="health-card-header" style="color: var(--primary-color);">🌱 Sigarayı Bırakınca Sağlıkta Oluşan Gelişmeler</div>
+                
+                <!-- Progress Bar -->
+                <div class="health-progress-wrapper">
+                    <p class="health-progress-message"><%= healthProgressMessage %></p>
+                    <div class="health-progress-bar">
+                        <div class="health-progress-fill" style="width: <%= healthProgressPercent %>%;"></div>
+                    </div>
+                </div>
+
+                <ul class="timeline-list">
+                    <% healthMilestones.forEach(m => { 
+                        let milestoneClass = "pending";
+                        if (elapsedMinutes >= m.minutes) {
+                            milestoneClass = "completed";
+                        } else if (nextMilestone && m.minutes === nextMilestone.minutes) {
+                            milestoneClass = "active";
+                        }
+                    %>
+                        <li class="milestone <%= milestoneClass %>">
+                            <strong><%= m.label %>:</strong> <%= m.description %>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+            
+            <p class="health-disclaimer">Bu bilgiler genel bilgilendirme amaçlıdır. Tıbbi değerlendirme için hekime başvurunuz.</p>
+        </div>
+    </div>
+
+    <!-- Sigara Fiyatı Güncelleme Modalı -->
+    <div id="priceModal" class="health-modal">
+        <div class="health-modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-modal" id="closePriceModalBtn">&times;</span>
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Sigara Fiyatını Güncelle</h2>
+            <form action="/update-price/<%= user.id %>" method="POST">
+                <div class="form-group" style="text-align: left;">
+                    <label for="packPrice">Yeni Paket Fiyatı (TL):</label>
+                    <input type="number" id="packPrice" name="packPrice" step="0.01" min="0.01" value="<%= user.packPrice %>" required>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 15px;">Fiyatı Güncelle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fullscreen Kutlama Overlay -->
+    <div id="celebrationOverlay" class="celebration-overlay">
+        <div class="celebration-content">
+            <h1 id="celebrationTitle">BUGÜN DE KAZANDIN! 🎉</h1>
+            <p>Sağlığına bir gün daha yatırım yaptın.</p>
+        </div>
+    </div>
+
+    <!-- Relapse (Aksama) Overlay -->
+    <div id="relapseOverlay" class="relapse-overlay hidden">
+        <div class="relapse-content">
+            <div class="warning-icon">⚠️</div>
+            <h1>Bugün bir aksama oldu.</h1>
+            <p>Yarın yeniden devam edebilirsin.</p>
+        </div>
+        <div class="smoke smoke-1"></div>
+        <div class="smoke smoke-2"></div>
+        <div class="smoke smoke-3"></div>
+    </div>
+
+    <script>
+        window.currentProfile = {
+            id: "<%= user.id %>",
+            name: "<%= user.name %>"
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="/public/js/main.js"></script>
+</body>
+</html>
